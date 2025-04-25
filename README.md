@@ -1,1 +1,192 @@
-# Course_5_Projects
+# Course_5_Project
+#>project one description of coourse five
+
+Breakdown & Explanation of the Rock-Paper-Scissors Code
+This C++ program is a Rock-Paper-Scissors game where a player competes against the computer. Below, I will explain each section of the code in detail.
+
+### 1. Importing Libraries
+#include <iostream>   // For input/output operations (cin, cout).
+/#include <cstdlib>    // For system functions (e.g., clearing the screen).
+/#include <ctime>      // For random number seeding (to generate computer's choice).
+using namespace std;  // To avoid writing std:: before standard functions.
+
+iostream: Used for input (cin) and output (cout).
+cstdlib: Used for system-related functions (e.g., clearing the console).
+ctime: Used for random number generation (seeding rand()).
+using namespace std;: Allows direct use of cout, cin, and endl without prefixing std::.
+>2. Enums for Choices & Winners
+Game Choices
+enum enGameChoice { Stone = 1, Paper = 2, Scissors = 3 };
+
+Defines the choices available in the game.
+The player and computer must choose Stone (1), Paper (2), or Scissors (3).
+Winner Types
+enum enWinner { Player1 = 1, Computer = 2, Draw = 3 };
+
+Defines the possible round/game results:
+Player1: Player wins.
+Computer: Computer wins.
+Draw: No winner.
+>3. Structures to Store Game Information
+-Single Round Information
+struct stRoundInfo
+{
+    short RoundNumber = 0;          // Current round number.
+    enGameChoice Player1Choice;     // Player's choice (Stone, Paper, or Scissors).
+    enGameChoice ComputerChoice;    // Computer's choice.
+    enWinner Winner;                // Stores the winner of the round.
+    string WinnerName;              // Winner’s name in text.
+};
+
+Stores the details of one round (choices, winner).
+Overall Game Statistics
+-struct stGameResults
+{
+    short GameRounds = 0;        // Total rounds played.
+    short Player1WinTimes = 0;   // Player1’s total wins.
+    short ComputerWinTimes = 0;  // Computer’s total wins.
+    short DrawTimes = 0;         // Number of rounds that ended in a draw.
+    enWinner GameWinner;         // Stores the final game winner.
+    string WinnerName = "";      // Final winner’s name in text.
+};
+
+Stores the total game results.
+>4. Generating Random Numbers
+int RandomNumber(int From, int To)
+{
+    return rand() % (To - From + 1) + From;
+}
+
+Generates a random number between From and To (inclusive).
+Used to randomly pick the computer's move.
+>5. Generating the Computer’s Move
+enGameChoice GetComputerChoice()
+{
+    return (enGameChoice) RandomNumber(1, 3);
+}
+
+Randomly selects the computer's move using RandomNumber().
+Converts the result to enGameChoice (Stone, Paper, or Scissors).
+>6. Determining the Round Winner
+enWinner WhoWonTheRound(stRoundInfo RoundInfo)
+{
+    if (RoundInfo.Player1Choice == RoundInfo.ComputerChoice)
+        return enWinner::Draw; // If both choices are the same, it's a draw.
+
+    switch (RoundInfo.Player1Choice)
+    {
+    case enGameChoice::Stone:
+        return (RoundInfo.ComputerChoice == enGameChoice::Paper) ? enWinner::Computer : enWinner::Player1;
+    case enGameChoice::Paper:
+        return (RoundInfo.ComputerChoice == enGameChoice::Scissors) ? enWinner::Computer : enWinner::Player1;
+    case enGameChoice::Scissors:
+        return (RoundInfo.ComputerChoice == enGameChoice::Stone) ? enWinner::Computer : enWinner::Player1;
+    }
+}
+
+Determines who won a round based on Rock-Paper-Scissors rules.
+>7. Determining the Overall Game Winner
+enWinner WhoWonTheGame(short Player1WinTimes, short ComputerWinTimes)
+{
+    if (Player1WinTimes > ComputerWinTimes) return enWinner::Player1;
+    else if (ComputerWinTimes > Player1WinTimes) return enWinner::Computer;
+    else return enWinner::Draw;
+}
+
+Compares win counts and determines the final winner.
+>8. Converting Enums to Strings
+-Convert Choices to Text
+string ChoiceName(enGameChoice Choice)
+{
+    string arrGameChoices[3] = { "Stone", "Paper", "Scissors" };
+    return arrGameChoices[Choice - 1];
+}
+
+Converts Stone, Paper, Scissors to text for display.
+-Convert Winner to Text
+string WinnerName(enWinner Winner)
+{
+    string arrWinnerName[3] = { "Player1", "Computer", "No Winner (Draw)" };
+    return arrWinnerName[Winner - 1];
+}
+
+Converts Player1, Computer, Draw to text for display.
+>9. Taking Player Input
+enGameChoice ReadPlayer1Choice()
+{
+    short Choice;
+    do
+    {
+        cout << "\nYour Choice: [1]:Stone, [2]:Paper, [3]:Scissors? ";
+        cin >> Choice;
+    } while (Choice < 1 || Choice > 3);
+    return (enGameChoice)Choice;
+}
+
+Asks the player for input and ensures valid entry (1-3).
+>10. Displaying Round Results
+void PrintRoundResults(stRoundInfo RoundInfo)
+{
+    cout << "\n____________ Round [" << RoundInfo.RoundNumber << "] ____________\n\n";
+    cout << "Player1 Choice: " << ChoiceName(RoundInfo.Player1Choice) << endl;
+    cout << "Computer Choice: " << ChoiceName(RoundInfo.ComputerChoice) << endl;
+    cout << "Round Winner   : [" << RoundInfo.WinnerName << "]\n";
+    cout << "_________________________________________\n" << endl;
+}
+
+Displays choices and winner for each round.
+>11. Playing the Game
+stGameResults PlayGame(short HowManyRounds)
+{
+    stRoundInfo RoundInfo;
+    short Player1WinTimes = 0, ComputerWinTimes = 0, DrawTimes = 0;
+
+    for (short GameRound = 1; GameRound <= HowManyRounds; GameRound++)
+    {
+        cout << "\nRound [" << GameRound << "] begins:\n";
+        RoundInfo.RoundNumber = GameRound;
+        RoundInfo.Player1Choice = ReadPlayer1Choice();
+        RoundInfo.ComputerChoice = GetComputerChoice();
+        RoundInfo.Winner = WhoWonTheRound(RoundInfo);
+        RoundInfo.WinnerName = WinnerName(RoundInfo.Winner);
+
+        if (RoundInfo.Winner == enWinner::Player1)
+            Player1WinTimes++;
+        else if (RoundInfo.Winner == enWinner::Computer)
+            ComputerWinTimes++;
+        else
+            DrawTimes++;
+
+        PrintRoundResults(RoundInfo);
+    }
+
+    return { HowManyRounds, Player1WinTimes, ComputerWinTimes, DrawTimes, WhoWonTheGame(Player1WinTimes, ComputerWinTimes), WinnerName(WhoWonTheGame(Player1WinTimes, ComputerWinTimes)) };
+}
+
+Loops through rounds, gets choices, determines winners, and prints results.
+>12. Starting the Game
+void StartGame()
+{
+    char PlayAgain = 'Y';
+
+    do
+    {
+        system("cls");  // Clear the screen before starting a new game.
+        stGameResults GameResults = PlayGame(3); // Play 3 rounds.
+        cout << "\nGame Over! Winner: " << GameResults.WinnerName << endl;
+
+        cout << "\nDo you want to play again? (Y/N): ";
+        cin >> PlayAgain;
+
+    } while (PlayAgain == 'Y' || PlayAgain == 'y');
+}
+Runs the game loop and asks if the player wants to play again.
+>13. Main Function
+int main()
+{
+    srand((unsigned)time(NULL));  // Seed random number generator.
+    StartGame();  // Start the game.
+    return 0;  // Return 0 to indicate successful execution.
+}
+Seeds the random number generator and starts the game.
+%%%Now you understand the full Rock-Paper-Scissors game!%%% 
