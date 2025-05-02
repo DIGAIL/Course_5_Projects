@@ -1,0 +1,235 @@
+#course five project 2
+##Algorithm and problem solving level 2
+
+
+Breakdown & Explanation of the Math Quiz Game (Project 2 Solution)
+This C++ program is a Math Quiz Game, allowing users to answer arithmetic questions while tracking their performance. Below is a detailed breakdown of the code.
+
+1. Importing Libraries
+#include <iostream>   // For input/output operations (cin, cout).
+#include <cstdlib>    // For system functions (e.g., clearing the screen, color changes).
+#include <ctime>      // For random number generation (seeding rand()).
+using namespace std;  // To avoid writing std:: before standard functions.
+
+iostream: Used for input (cin) and output (cout).
+cstdlib: Used for system-related functions (e.g., clearing the console, changing colors).
+ctime: Used to seed the random number generator.
+using namespace std;: Allows direct use of cout, cin, and endl.
+2. Enums for Question Levels & Operations
+Question Difficulty Levels
+enum enQuestionsLevel { EasyLevel = 1, MedLevel = 2, HardLevel = 3, Mix = 4 };
+
+Defines difficulty levels for questions.
+The player selects one of these levels before starting.
+Math Operation Types
+enum enOperationType { Add = 1, Sub = 2, Mult = 3, Div = 4, MixOp = 5 };
+
+Defines arithmetic operations available in the quiz.
+The user selects one or chooses MixOp (randomized operations).
+3. Converting Enums to Readable Text
+Convert Operation Type to Symbol
+string GetOpTypeSymbol(enOperationType OpType)
+{
+    switch (OpType)
+    {
+    case enOperationType::Add:
+        return "+";
+    case enOperationType::Sub:
+        return "-";
+    case enOperationType::Mult:
+        return "x";
+    case enOperationType::Div:
+        return "/";
+    default:
+        return "Mix";
+    }
+}
+
+Returns the corresponding symbol for an arithmetic operation.
+Convert Difficulty Level to Text
+string GetQuestionLevelText(enQuestionsLevel QuestionLevel)
+{
+    string arrQuestionLevelText[4] = { "Easy","Med","Hard","Mix" };
+    return arrQuestionLevelText[QuestionLevel - 1];
+}
+
+Returns a string representation of the difficulty level.
+4. Generating Random Numbers
+int RandomNumber(int From, int To)
+{
+    return rand() % (To - From + 1) + From;
+}
+
+Generates a random number between From and To.
+Used in question generation.
+5. Changing Console Color
+void SetScreenColor(bool Right)
+{
+    if (Right)
+        system("color 2F"); // Turn screen green if the answer is correct.
+    else
+    {
+        system("color 4F"); // Turn screen red if the answer is wrong.
+        cout << "\a"; // Play an alert sound.
+    }
+}
+
+Changes the screen color depending on whether the answer is correct or incorrect.
+6. Reading User Preferences
+Read Number of Questions
+short ReadHowManyQuestions()
+{
+    short NumberOfQuestions;
+    do
+    {
+        cout << "How Many Questions do you want to answer? ";
+        cin >> NumberOfQuestions;
+    } while (NumberOfQuestions < 1 || NumberOfQuestions > 10);
+    
+    return NumberOfQuestions;
+}
+
+Ensures the user enters a valid number of questions (1-10).
+Read Question Difficulty
+enQuestionsLevel ReadQuestionsLevel()
+{
+    short QuestionLevel = 0;
+    do
+    {
+        cout << "Enter Questions Level [1] Easy, [2] Med, [3] Hard, [4] Mix? ";
+        cin >> QuestionLevel;
+    } while (QuestionLevel < 1 || QuestionLevel > 4);
+    
+    return (enQuestionsLevel) QuestionLevel;
+}
+
+Ensures the user selects a valid difficulty level.
+Read Operation Type
+enOperationType ReadOpType()
+{
+    short OpType;
+    do
+    {
+        cout << "Enter Operation Type [1] Add, [2] Sub, [3] Mul, [4] Div, [5] Mix? ";
+        cin >> OpType;
+    } while (OpType < 1 || OpType > 5);
+    
+    return (enOperationType) OpType;
+}
+
+Ensures the user selects a valid operation type.
+7. Data Structures for Quiz Storage
+Question Structure
+struct stQuestion
+{
+    int Number1 = 0;
+    int Number2 = 0;
+    enOperationType OperationType;
+    enQuestionsLevel QuestionLevel;
+    int CorrectAnswer = 0;
+    int PlayerAnswer = 0;
+    bool AnswerResult = false;
+};
+
+Stores information for a single math question.
+Quiz Structure
+struct stQuizz
+{
+    stQuestion QuestionList[100];
+    short NumberOfQuestions;
+    enQuestionsLevel QuestionsLevel;
+    enOperationType OpType;
+    short NumberOfWrongAnswers = 0;
+    short NumberOfRightAnswers = 0;
+    bool isPass = false;
+};
+
+Stores all questions, results, and pass/fail status.
+8. Performing Calculations
+int SimpleCalculator(int Number1, int Number2, enOperationType OpType)
+{
+    switch (OpType)
+    {
+    case enOperationType::Add:
+        return Number1 + Number2;
+    case enOperationType::Sub:
+        return Number1 - Number2;
+    case enOperationType::Mult:
+        return Number1 * Number2;
+    case enOperationType::Div:
+        return Number1 / Number2;
+    default:
+        return Number1 + Number2;
+    }
+}
+
+Performs the correct math operation based on the chosen type.
+9. Generating Quiz Questions
+stQuestion GenerateQuestion(enQuestionsLevel QuestionLevel, enOperationType OpType)
+{
+    stQuestion Question;
+
+    if (QuestionLevel == enQuestionsLevel::Mix)
+        QuestionLevel = (enQuestionsLevel) RandomNumber(1, 3);
+
+    if (OpType == enOperationType::MixOp)
+        OpType = GetRandomOperationType();
+
+    Question.OperationType = OpType;
+
+    switch (QuestionLevel)
+    {
+    case enQuestionsLevel::EasyLevel:
+        Question.Number1 = RandomNumber(1, 10);
+        Question.Number2 = RandomNumber(1, 10);
+        break;
+    case enQuestionsLevel::MedLevel:
+        Question.Number1 = RandomNumber(10, 50);
+        Question.Number2 = RandomNumber(10, 50);
+        break;
+    case enQuestionsLevel::HardLevel:
+        Question.Number1 = RandomNumber(50, 100);
+        Question.Number2 = RandomNumber(50, 100);
+        break;
+    }
+
+    Question.CorrectAnswer = SimpleCalculator(Question.Number1, Question.Number2, Question.OperationType);
+    Question.QuestionLevel = QuestionLevel;
+
+    return Question;
+}
+
+Generates a random question based on difficulty and operation type.
+10. Running the Quiz
+void AskAndCorrectQuestionListAnswers(stQuizz& Quizz)
+{
+    for (short QuestionNumber = 0; QuestionNumber < Quizz.NumberOfQuestions; QuestionNumber++)
+    {
+        cout << "\nQuestion [" << QuestionNumber + 1 << "/" << Quizz.NumberOfQuestions << "]\n";
+        cout << Quizz.QuestionList[QuestionNumber].Number1 << " "
+             << GetOpTypeSymbol(Quizz.QuestionList[QuestionNumber].OperationType) << " "
+             << Quizz.QuestionList[QuestionNumber].Number2 << " = ";
+
+        cin >> Quizz.QuestionList[QuestionNumber].PlayerAnswer;
+
+        if (Quizz.QuestionList[QuestionNumber].PlayerAnswer == Quizz.QuestionList[QuestionNumber].CorrectAnswer)
+        {
+            cout << "Correct!\n";
+            Quizz.NumberOfRightAnswers++;
+        }
+        else
+        {
+            cout << "Wrong! Correct Answer: " << Quizz.QuestionList[QuestionNumber].CorrectAnswer << endl;
+            Quizz.NumberOfWrongAnswers++;
+        }
+    }
+
+    Quizz.isPass = (Quizz.NumberOfRightAnswers >= Quizz.NumberOfWrongAnswers);
+}
+
+Loops through each question, checks correctness, and stores the result.
+Final Steps
+PlayMathGame(): Runs the game.
+StartGame(): Controls the game loop.
+main(): Initializes the game.
+
