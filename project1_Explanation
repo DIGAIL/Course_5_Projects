@@ -189,4 +189,3 @@ int main()
     return 0;  // Return 0 to indicate successful execution.
 }
 Seeds the random number generator and starts the game.
-%%%Now you understand the full Rock-Paper-Scissors game!%%% 
