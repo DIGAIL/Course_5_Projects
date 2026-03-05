@@ -5,15 +5,15 @@ The project allows the user to manage bank clients by viewing, adding, deleting,
 All data is stored using file handling.
 
 ## Features
-- Show Clients
+- Show Clients. 
     Display all clients. 
-- Add Client
+- Add Client  
     Add new client.  
-- Delete Client
+- Delete Client  
      Remove client.  
-- Update Client
+- Update Client  
      Edit client data. 
-- Find Client
+- Find Client  
       Search for client.  
 
 ## Technologies
