@@ -6,19 +6,15 @@ All data is stored using file handling.
 
 ## Features
 - Show Clients
+    Display all clients. 
 - Add Client
+    Add new client.  
 - Delete Client
+     Remove client.  
 - Update Client
+     Edit client data. 
 - Find Client
-- Exit
-| Operation     | Description          |
-|---------------|----------------------|
-| Show Clients  | Display all clients. |
-| Add Client    | Add new client.      |
-| Delete Client | Remove client.       |
-| Update Client | Edit client data.    |
-| Find Client   | Search for client.   |
-| Exit          | Close program.       |
+      Search for client.  
 
 ## Technologies
 - C++
