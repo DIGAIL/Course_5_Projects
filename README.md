@@ -17,11 +17,11 @@ All data is stored using file handling.
 &nbsp;&nbsp;&nbsp;&nbsp;Search for client.  
 
 ## Technologies
-- C++
-- STL (Vector) 
-- functions
-Files Handling
-structures. 
+- C++  
+- STL (Vector)  
+- functions  
+Files Handling  
+structures.  
 
 ## How to Run
 1. Clone the repository
